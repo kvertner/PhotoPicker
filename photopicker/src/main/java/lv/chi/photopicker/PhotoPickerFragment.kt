@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.TypedValue
@@ -252,15 +253,19 @@ class PhotoPickerFragment : DialogFragment() {
     }
 
     private fun grantPermissions() {
-        if (!isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE))
+        val imagesRequest = if(Build.VERSION.SDK_INT >= 33) Manifest.permission.READ_MEDIA_IMAGES else Manifest.permission.READ_EXTERNAL_STORAGE
+
+        if (!isPermissionGranted(imagesRequest))
             requestPermissions(
-                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                arrayOf(imagesRequest),
                 Request.MEDIA_ACCESS_PERMISSION
             )
     }
 
     private fun updateState() {
-        if (isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+        val imagesRequest = if(Build.VERSION.SDK_INT >= 33) Manifest.permission.READ_MEDIA_IMAGES else Manifest.permission.READ_EXTERNAL_STORAGE
+
+        if (isPermissionGranted(imagesRequest)) {
             vm.setHasPermission(true)
             loadPhotos()
         }
